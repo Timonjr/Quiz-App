@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}User Dashboard - Quiz Master{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Welcome, {{ g.user.full_name }}</h5>
+                </div>
+                <div class="card-body">
+                    <p>Welcome to Quiz Master! Below you'll find a list of upcoming quizzes that you can attempt.</p>
+                    <p>Click on <strong>Start Quiz</strong> to begin any quiz. Once started, you'll need to complete the quiz within the time limit.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Upcoming Quizzes</h5>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_quizzes %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Quiz</th>
+                                        <th>Subject</th>
+                                        <th>Chapter</th>
+                                        <th>Date</th>
+                                        <th>Duration</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for quiz in upcoming_quizzes %}
+                                        <tr>
+                                            <td>{{ quiz.name }}</td>
+                                            <td>{{ quiz.subject_name }}</td>
+                                            <td>{{ quiz.chapter_name }}</td>
+                                            <td>{{ quiz.date_of_quiz.strftime('%d %b, %Y') }}</td>
+                                            <td>{{ quiz.time_duration }} minutes</td>
+                                            <td>
+                                                <a href="{{ url_for('user.start_quiz', quiz_id=quiz.id) }}" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-play-circle me-1"></i> Start
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> No upcoming quizzes available. Check back later!
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Your Performance by Subject</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="subjectScoreChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Quizzes Attempted by Subject</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="quizAttemptsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load chart data for subject scores
+        loadChartData(
+            "{{ url_for('user.subject_scores') }}", 
+            'bar', 
+            'subjectScoreChart', 
+            'Your Average Scores (%) by Subject', 
+            'Subjects', 
+            'Score (%)'
+        );
+        
+        // Load chart data for quiz attempts
+        loadChartData(
+            "{{ url_for('user.quiz_attempts') }}", 
+            'pie', 
+            'quizAttemptsChart', 
+            'Number of Quizzes Attempted by Subject'
+        );
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Questions - {{ quiz.name }} - Quiz Master{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>Questions: {{ quiz.name }}</h1>
+            <p class="text-muted">Chapter: {{ quiz.chapter.name }} | Subject: {{ quiz.chapter.subject.name }} | Date: {{ quiz.date_of_quiz.strftime('%d %b, %Y') }} | Duration: {{ quiz.time_duration }} minutes</p>
+        </div>
+        <a href="{{ url_for('admin.quizzes', chapter_id=quiz.chapter_id) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Quizzes
+        </a>
+    </div>
+    
+    <!-- Add/Edit Question Form -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">{% if edit_question %}Edit Question{% else %}Add New Question{% endif %}</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% if edit_question %}{{ url_for('admin.edit_question', id=edit_question.id) }}{% else %}{{ url_for('admin.questions', quiz_id=quiz.id) }}{% endif %}" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="question_statement" class="form-label">Question</label>
+                    <textarea class="form-control" id="question_statement" name="question_statement" rows="3" required>{% if edit_question %}{{ edit_question.question_statement }}{% endif %}</textarea>
+                    <div class="invalid-feedback">
+                        Please enter a question.
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="option_a" class="form-label">Option A</label>
+                        <input type="text" class="form-control" id="option_a" name="option_a" value="{% if edit_question %}{{ edit_question.option_a }}{% endif %}" required>
+                        <div class="invalid-feedback">
+                            Please enter option A.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="option_b" class="form-label">Option B</label>
+                        <input type="text" class="form-control" id="option_b" name="option_b" value="{% if edit_question %}{{ edit_question.option_b }}{% endif %}" required>
+                        <div class="invalid-feedback">
+                            Please enter option B.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="option_c" class="form-label">Option C</label>
+                        <input type="text" class="form-control" id="option_c" name="option_c" value="{% if edit_question %}{{ edit_question.option_c }}{% endif %}" required>
+                        <div class="invalid-feedback">
+                            Please enter option C.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="option_d" class="form-label">Option D</label>
+                        <input type="text" class="form-control" id="option_d" name="option_d" value="{% if edit_question %}{{ edit_question.option_d }}{% endif %}" required>
+                        <div class="invalid-feedback">
+                            Please enter option D.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Correct Option</label>
+                    <div class="d-flex gap-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="correct_option" id="correct_a" value="A" {% if edit_question and edit_question.correct_option == 'A' %}checked{% endif %} required>
+                            <label class="form-check-label" for="correct_a">
+                                Option A
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="correct_option" id="correct_b" value="B" {% if edit_question and edit_question.correct_option == 'B' %}checked{% endif %} required>
+                            <label class="form-check-label" for="correct_b">
+                                Option B
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="correct_option" id="correct_c" value="C" {% if edit_question and edit_question.correct_option == 'C' %}checked{% endif %} required>
+                            <label class="form-check-label" for="correct_c">
+                                Option C
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="correct_option" id="correct_d" value="D" {% if edit_question and edit_question.correct_option == 'D' %}checked{% endif %} required>
+                            <label class="form-check-label" for="correct_d">
+                                Option D
+                            </label>
+                        </div>
+                    </div>
+                    <div class="invalid-feedback">
+                        Please select the correct option.
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end">
+                    {% if edit_question %}
+                        <a href="{{ url_for('admin.questions', quiz_id=quiz.id) }}" class="btn btn-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-success">Update Question</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-primary">Add Question</button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Questions List -->
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Question List ({{ questions|length }})</h5>
+        </div>
+        <div class="card-body">
+            {% if questions %}
+                <div class="accordion" id="questionsAccordion">
+                    {% for question in questions %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ question.id }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ question.id }}" aria-expanded="false" aria-controls="collapse{{ question.id }}">
+                                    <span class="me-2">{{ loop.index }}.</span> {{ question.question_statement }}
+                                </button>
+                            </h2>
+                            <div id="collapse{{ question.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ question.id }}" data-bs-parent="#questionsAccordion">
+                                <div class="accordion-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="mb-2">
+                                                <span class="fw-bold">A.</span> {{ question.option_a }}
+                                                {% if question.correct_option == 'A' %}<span class="badge bg-success ms-2">Correct</span>{% endif %}
+                                            </div>
+                                            <div>
+                                                <span class="fw-bold">B.</span> {{ question.option_b }}
+                                                {% if question.correct_option == 'B' %}<span class="badge bg-success ms-2">Correct</span>{% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-2">
+                                                <span class="fw-bold">C.</span> {{ question.option_c }}
+                                                {% if question.correct_option == 'C' %}<span class="badge bg-success ms-2">Correct</span>{% endif %}
+                                            </div>
+                                            <div>
+                                                <span class="fw-bold">D.</span> {{ question.option_d }}
+                                                {% if question.correct_option == 'D' %}<span class="badge bg-success ms-2">Correct</span>{% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-end">
+                                        <a href="{{ url_for('admin.edit_question', id=question.id) }}" class="btn btn-sm btn-warning me-2">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <form method="post" action="{{ url_for('admin.delete_question', id=question.id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-danger" data-confirm="Are you sure you want to delete this question?">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No questions added yet for this quiz. Use the form above to create your first question.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Quiz: {{ quiz.name }} - Quiz Master{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ quiz.name }}</h5>
+                    <div class="quiz-timer" id="quizTimer" data-duration="{{ remaining_seconds }}">00:00</div>
+                </div>
+                <div class="card-body">
+                    <!-- Quiz Progress -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>Question {{ question_index + 1 }} of {{ total_questions }}</div>
+                            <div>Time Remaining</div>
+                        </div>
+                        <div class="progress">
+                            <div id="timerProgressBar" class="progress-bar bg-success" role="progressbar" style="width: 100%" 
+                                aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" data-total-duration="{{ remaining_seconds }}"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Question and Options -->
+                    <form id="quizForm" method="post" action="{{ url_for('user.take_quiz', quiz_id=quiz.id, question_index=question_index) }}">
+                        <input type="hidden" id="quizId" value="{{ quiz.id }}">
+                        <input type="hidden" id="selectedOption" name="option" value="{{ selected_option }}">
+                        
+                        <div class="mb-4">
+                            <h4 class="mb-3">{{ question.question_statement }}</h4>
+                            
+                            <div class="quiz-option {% if selected_option == 'A' %}selected{% endif %}" id="optionA" onclick="selectOption('optionA', 'A')">
+                                <div class="d-flex align-items-start">
+                                    <div class="me-3">A.</div>
+                                    <div>{{ question.option_a }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-option {% if selected_option == 'B' %}selected{% endif %}" id="optionB" onclick="selectOption('optionB', 'B')">
+                                <div class="d-flex align-items-start">
+                                    <div class="me-3">B.</div>
+                                    <div>{{ question.option_b }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-option {% if selected_option == 'C' %}selected{% endif %}" id="optionC" onclick="selectOption('optionC', 'C')">
+                                <div class="d-flex align-items-start">
+                                    <div class="me-3">C.</div>
+                                    <div>{{ question.option_c }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-option {% if selected_option == 'D' %}selected{% endif %}" id="optionD" onclick="selectOption('optionD', 'D')">
+                                <div class="d-flex align-items-start">
+                                    <div class="me-3">D.</div>
+                                    <div>{{ question.option_d }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                {% if question_index > 0 %}
+                                    <a href="{{ url_for('user.take_quiz', quiz_id=quiz.id, question_index=question_index - 1) }}" class="btn btn-secondary">
+                                        <i class="fas fa-chevron-left me-1"></i> Previous
+                                    </a>
+                                {% endif %}
+                            </div>
+                            <div>
+                                {% if question_index == total_questions - 1 %}
+                                    <button type="button" class="btn btn-danger" onclick="submitQuiz('quizForm')">
+                                        <i class="fas fa-check-circle me-1"></i> Submit Quiz
+                                    </button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-primary">
+                                        Save & Next <i class="fas fa-chevron-right ms-1"></i>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize quiz timer
+        initQuizTimer({{ remaining_seconds }}, 'quizTimer', 'quizForm');
+    });
+</script>
+{% endblock %}
