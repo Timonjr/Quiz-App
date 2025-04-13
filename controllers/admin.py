@@ -1,8 +1,8 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, jsonify
+    Blueprint, flash, g, redirect, render_template, request, url_for, jsonify, current_app
 )
 from datetime import datetime
-from sqlalchemy import func
+from sqlalchemy import func, distinct
 
 from app import db
 from models import Subject, Chapter, Quiz, Question, User, Score
@@ -366,7 +366,7 @@ def subject_quiz_count():
             'data': data
         })
     except Exception as e:
-        app.logger.error(f"Error in subject_quiz_count: {str(e)}")
+        current_app.logger.error(f"Error in subject_quiz_count: {str(e)}")
         return jsonify({
             'labels': [],
             'data': [],
@@ -402,7 +402,7 @@ def subject_user_count():
             'data': data
         })
     except Exception as e:
-        app.logger.error(f"Error in subject_user_count: {str(e)}")
+        current_app.logger.error(f"Error in subject_user_count: {str(e)}")
         return jsonify({
             'labels': [],
             'data': [],
