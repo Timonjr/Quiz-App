@@ -342,34 +342,69 @@ def summary():
 @bp.route('/api/chart/subject-quiz-count')
 @admin_required
 def subject_quiz_count():
-    # Get subject quiz counts for chart
-    query = db.session.query(
-        Subject.name,
-        func.count(Quiz.id).label('quiz_count')
-    ).join(Chapter).join(Quiz).group_by(Subject.id).all()
-    
-    labels = [row[0] for row in query]
-    data = [row[1] for row in query]
-    
-    return jsonify({
-        'labels': labels,
-        'data': data
-    })
+    try:
+        # Get subject quiz counts for chart
+        query = db.session.query(
+            Subject.name.label('subject_name'),
+            func.count(Quiz.id).label('quiz_count')
+        ).select_from(Subject).join(Chapter, Subject.id == Chapter.subject_id) \
+         .join(Quiz, Chapter.id == Quiz.chapter_id) \
+         .group_by(Subject.id).all()
+        
+        labels = [row.subject_name for row in query]
+        data = [row.quiz_count for row in query]
+        
+        # If no data, provide default empty response
+        if not labels:
+            return jsonify({
+                'labels': [],
+                'data': []
+            })
+        
+        return jsonify({
+            'labels': labels,
+            'data': data
+        })
+    except Exception as e:
+        app.logger.error(f"Error in subject_quiz_count: {str(e)}")
+        return jsonify({
+            'labels': [],
+            'data': [],
+            'error': str(e)
+        }), 500
 
 
 @bp.route('/api/chart/subject-user-count')
 @admin_required
 def subject_user_count():
-    # Get subject user attempt counts for chart
-    query = db.session.query(
-        Subject.name,
-        func.count(Score.id).label('attempt_count')
-    ).join(Chapter).join(Quiz).join(Score).group_by(Subject.id).all()
-    
-    labels = [row[0] for row in query]
-    data = [row[1] for row in query]
-    
-    return jsonify({
-        'labels': labels,
-        'data': data
-    })
+    try:
+        # Get subject user attempt counts for chart
+        query = db.session.query(
+            Subject.name.label('subject_name'),
+            func.count(distinct(Score.user_id)).label('user_count')
+        ).select_from(Subject).join(Chapter, Subject.id == Chapter.subject_id) \
+         .join(Quiz, Chapter.id == Quiz.chapter_id) \
+         .join(Score, Quiz.id == Score.quiz_id) \
+         .group_by(Subject.id).all()
+        
+        labels = [row.subject_name for row in query]
+        data = [row.user_count for row in query]
+        
+        # If no data, provide default empty response
+        if not labels:
+            return jsonify({
+                'labels': [],
+                'data': []
+            })
+        
+        return jsonify({
+            'labels': labels,
+            'data': data
+        })
+    except Exception as e:
+        app.logger.error(f"Error in subject_user_count: {str(e)}")
+        return jsonify({
+            'labels': [],
+            'data': [],
+            'error': str(e)
+        }), 500
