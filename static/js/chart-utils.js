@@ -192,8 +192,17 @@ function createPieChart(elementId, title, labels, data) {
  */
 function loadChartData(apiUrl, chartType, elementId, title, xLabel = '', yLabel = '') {
     fetch(apiUrl)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            if (!data || !data.labels || !data.data || data.labels.length === 0) {
+                throw new Error('No data available');
+            }
+            
             if (chartType === 'bar') {
                 createBarChart(elementId, title, data.labels, data.data, xLabel, yLabel);
             } else if (chartType === 'doughnut') {

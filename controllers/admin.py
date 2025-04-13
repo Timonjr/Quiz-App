@@ -346,7 +346,9 @@ def subject_quiz_count():
     query = db.session.query(
         Subject.name,
         func.count(Quiz.id).label('quiz_count')
-    ).join(Chapter).join(Quiz).group_by(Subject.id).all()
+    ).join(Chapter, Subject.id == Chapter.subject_id)\
+     .join(Quiz, Chapter.id == Quiz.chapter_id)\
+     .group_by(Subject.id).all()
     
     labels = [row[0] for row in query]
     data = [row[1] for row in query]
@@ -364,7 +366,10 @@ def subject_user_count():
     query = db.session.query(
         Subject.name,
         func.count(Score.id).label('attempt_count')
-    ).join(Chapter).join(Quiz).join(Score).group_by(Subject.id).all()
+    ).join(Chapter, Subject.id == Chapter.subject_id)\
+     .join(Quiz, Chapter.id == Quiz.chapter_id)\
+     .join(Score, Quiz.id == Score.quiz_id)\
+     .group_by(Subject.id).all()
     
     labels = [row[0] for row in query]
     data = [row[1] for row in query]
