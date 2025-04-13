@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Quiz Master{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="auth-container">
+        <h2 class="auth-title">Welcome to Quiz Master</h2>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Login</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                        <div class="invalid-feedback">
+                            Please enter a valid email address.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <div class="invalid-feedback">
+                            Please enter your password.
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="text-center mt-3">
+            <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register now</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
