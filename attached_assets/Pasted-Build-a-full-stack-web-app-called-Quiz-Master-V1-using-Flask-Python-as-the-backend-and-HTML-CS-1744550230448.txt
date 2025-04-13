@@ -1,0 +1,64 @@
+Build a full-stack web app called “Quiz Master - V1” using Flask (Python) as the backend and HTML/CSS/JavaScript (with Bootstrap if needed) for the frontend. Use SQLite for the database.
+
+There are two roles: **Administrator** and **User**.
+
+🔐 AUTHENTICATION:
+- Login and registration system.
+- Users register using email, password, full name, qualification, and DOB.
+- Login form for both roles.
+- After login, redirect users/admins to their respective dashboards.
+
+👑 ADMIN FLOW:
+1. **Dashboard**:
+   - View subjects with options to edit/delete each.
+   - Add new subjects (Name + Description).
+
+2. **Chapters Management**:
+   - Each subject contains multiple chapters.
+   - Admin can add chapters (Name + Description).
+   - List all chapters under each subject.
+
+3. **Quiz Management**:
+   - Quizzes are based on chapters.
+   - Add new quiz: choose chapter, enter date, duration.
+   - View list of all quizzes.
+
+4. **Question Management**:
+   - For each quiz, admin can add questions (MCQ with 4 options, single correct).
+   - Each question must be tied to a chapter.
+
+5. **Summary Charts**:
+   - Bar chart showing subject-wise quiz counts.
+   - Donut chart showing total users attempting quizzes per subject.
+
+👤 USER FLOW:
+1. **User Dashboard**:
+   - After login, shows upcoming quizzes with details (subject, chapter, date, time).
+   - Users can click "Start" to begin quiz.
+
+2. **Quiz Interface**:
+   - One question per screen, 4 options (radio buttons).
+   - Timer in the top-right corner.
+   - Navigation via "Save and Next", final submission ends quiz.
+
+3. **Post-Quiz View**:
+   - Summary page showing quiz ID, subject, chapter, total questions, date, duration.
+
+4. **Scores Page**:
+   - Shows user's past quiz attempts with date and score.
+
+5. **User Summary Charts**:
+   - Bar chart: Subject vs user scores.
+   - Pie chart: User-wise number of quizzes attempted.
+
+💡 OTHER DETAILS:
+- Use Flask sessions for login/logout.
+- Use Bootstrap or TailwindCSS for clean UI.
+- Handle edge cases like:
+  - Prevent users from starting the same quiz twice.
+  - Timer continues if user reloads page (optional: use localStorage).
+  - Validate all forms before submission.
+
+🎯 GOAL:
+Make it clean, functional, and reflect the wireframe design exactly. Use dummy data where necessary for testing. The app is meant to simulate a real-world quiz portal but not for submission — just exploration and learning.
+
